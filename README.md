@@ -4,7 +4,7 @@
 
 Network-focused SOC investigation of a simulated compromise at a fictional nonprofit, Whiskers & Wonders Cat Sanctuary, completed on the [KC7 Cyber](https://kc7cyber.com) platform. Starting from a single suspicious IP address, I used **KQL** to pivot across DNS, network-flow, proxy and email logs. I uncovered a phishing campaign that compromised three employees with access to the donation system, confirmed active **C2 beaconing** over HTTPS, scoped the impact, built a timeline and IOC list, and wrote containment actions and detection rules.
 
-> **Platform:** KC7 Cyber, module *Whiskermania: An Intro to Network Concepts* (Advanced) · **Status:** completed, 81/81 questions, 2,275 points
+> **Platform:** KC7 Cyber, module *Whiskermania: An Intro to Network Concepts* (Advanced)· 
 > **Tools:** Azure Data Explorer (Kusto) · KQL · MITRE ATT&CK
 
 ---
@@ -27,7 +27,7 @@ Network-focused SOC investigation of a simulated compromise at a fictional nonpr
 
 ## Overview
 
-**Scenario:** I play the newly hired IT administrator at a cat sanctuary. The previous admin left suddenly, leaving notes about an external IP: *"185.174.137.42 - WHO IS THIS? Check again."* The sanctuary's biggest fundraiser, which brings in most of the year's donations, is five days away.
+**Scenario:** An alert was raised about an external IP: *"185.174.137.42"* The sanctuary's biggest fundraiser, which brings in most of the year's donations, is five days away.
 
 **Goal:** learn the network well enough to tell normal traffic from malicious traffic, then follow the lead to a full picture of the compromise.
 
@@ -69,7 +69,6 @@ All queries are in [`/queries`](queries), one file per phase.
 
 ### Phase 1: Understand the environment
 
-*Before hunting, know what you're defending.*
 
 ```kql
 DeviceInfo
@@ -110,7 +109,7 @@ I then traced **one legitimate request** (a workstation opening `docs.google.com
 
 ### Phase 3: Pivot from the lead
 
-The previous admin's note pointed at `185.174.137[.]42`, a **public** IP. Which domain resolves to it, and who asked?
+The alert pointed at `185.174.137[.]42`, a **public** IP. Which domain resolves to it, and who asked?
 
 ```kql
 DnsEvents
@@ -278,6 +277,6 @@ A KQL quick reference built during this investigation is in [`docs/kql-cheatshee
 
 ---
 
-*Scenario, data and story by [KC7 Cyber](https://kc7cyber.com); module authors Simeon Kakpovi, Kell Duda and Jibby Saetang. Write-up and analysis by Mazen Yousef.*
+*Scenario, data and story by [KC7 Cyber](https://kc7cyber.com).*
 
 *Author: Mazen Yousef | [LinkedIn](https://linkedin.com/in/mazenyousef) | [TryHackMe](https://tryhackme.com/p/mazen.yousef)*
