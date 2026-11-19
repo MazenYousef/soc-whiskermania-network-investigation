@@ -1,0 +1,21 @@
+// Phase 5 - Find the initial access vector
+
+// Senders that use the organisation's name but NOT its real domain (lookalike domains)
+Email
+| where sender !endswith "@whiskersandwonders.org"
+| where sender contains "whiskersandwonders"
+| project timestamp, sender, recipient, subject
+
+// Who received the phishing email?  -> 3 recipients
+Email
+| where sender contains "whiskersandwonders-hr.com"
+| distinct recipient
+
+// Correlate: phishing recipients vs. hosts beaconing to C2
+Email
+| where sender contains "whiskersandwonders-hr.com"
+| distinct recipient
+
+DnsEvents
+| where query_name contains "update-cdn-service.xyz"
+| distinct client_ip

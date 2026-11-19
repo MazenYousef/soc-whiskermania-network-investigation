@@ -1,0 +1,15 @@
+// Phase 7 - Detection rules to catch this activity going forward
+
+// Detection 1: DNS lookup of the known C2 domain
+DnsEvents
+| where query_name in ("update-cdn-service.xyz")
+
+// Detection 2: any connection to the C2 IP
+NetworkFlow
+| where dest_ip == "185.174.137.42"
+
+// Detection 3: behaviour-based - beacon-style API paths on cheap .xyz domains
+// (catches the same malware even if the attacker changes domain or IP)
+ProxyEvents
+| where url matches regex @"/api/v\d+/(status|config)"
+| where domain endswith ".xyz"

@@ -1,0 +1,32 @@
+// Phase 2b - Follow ONE legitimate web request across three log sources
+// Workstation 10.10.16.14 browsing to docs.google.com
+
+// Step 1: DNS resolution (domain -> IP)
+DnsEvents
+| where query_name == "docs.google.com"
+| where query_type == "A"
+| project timestamp, client_ip, query_name, resolved_ips
+| take 1
+
+// Step 2: the DNS query itself on the wire (UDP/53 to the internal DNS server)
+NetworkFlow
+| where src_ip == "10.10.16.14"
+| where timestamp between (datetime(2025-06-03 08:39:19) .. datetime(2025-06-03 08:59:19))
+| where dest_port == "53"
+| project timestamp, src_ip, dest_ip, dest_port, protocol
+| limit 10
+
+// Step 3: the HTTPS connection to the resolved IP (TCP/443)
+NetworkFlow
+| where src_ip == "10.10.16.14"
+| where dest_ip == "152.52.146.99"
+| project timestamp, src_ip, dest_ip, dest_port, protocol
+| take 1
+
+// Step 4: the full URL and response at the proxy (SSL inspection enabled)
+ProxyEvents
+| where src_ip == "10.10.16.14"
+| where domain == "docs.google.com"
+| where timestamp between (datetime(2025-06-03 08:50:00) .. datetime(2025-06-03 09:00:00))
+| project timestamp, src_ip, url, status_code
+| take 1

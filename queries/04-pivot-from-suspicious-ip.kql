@@ -1,0 +1,12 @@
+// Phase 3 - Pivot from the lead: external IP 185.174.137.42 from the previous admin's notes
+
+// Which domain points to the IP?  -> update-cdn-service.xyz
+DnsEvents
+| where resolved_ips has "185.174.137.42"
+| distinct query_name
+
+// Which internal hosts looked it up?  -> 3 hosts
+DnsEvents
+| where query_name contains "update-cdn-service.xyz"
+| summarize lookups = count() by client_ip
+| order by lookups desc

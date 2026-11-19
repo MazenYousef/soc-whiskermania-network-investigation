@@ -1,0 +1,23 @@
+// Phase 2 - Learn what "normal" traffic looks like
+// Data: NetworkFlow (connections), DnsEvents (lookups)
+
+// Most-used destination ports (top result: 25/SMTP, expected for a donor-facing org)
+NetworkFlow
+| summarize traffic = count() by dest_port
+| order by traffic desc
+| take 5
+
+// Overall protocol mix (TCP carries most traffic)
+NetworkFlow
+| summarize count() by protocol
+| order by count_ desc
+
+// DNS traffic runs mainly over UDP
+NetworkFlow
+| where dest_port == 53
+| summarize count() by protocol
+
+// What a DNS log record contains
+DnsEvents
+| take 5
+| project timestamp, client_ip, query_name, query_type, resolved_ips, dns_server, ttl

@@ -1,0 +1,25 @@
+// Phase 6 - Scope, impact and timeline
+
+// When did the phishing emails arrive?
+Email
+| where sender contains "whiskersandwonders-hr.com"
+| project timestamp, recipient
+| order by timestamp asc
+
+// When did each host start beaconing? (about 7 hours after the first email)
+DnsEvents
+| where query_name contains "update-cdn-service.xyz"
+| summarize first_query = min(timestamp) by client_ip
+| order by first_query asc
+
+// Who are the compromised users? (join DNS evidence to the employee directory)
+DnsEvents
+| where query_name contains "update-cdn-service.xyz"
+| distinct client_ip
+| join kind=inner (Employees | project ip_addr, name, username, role) on $left.client_ip == $right.ip_addr
+| project name, username, role
+
+// How long has the C2 been active, per host? (about 4 days)
+DnsEvents
+| where query_name has "update-cdn-service.xyz"
+| summarize first_beacon = min(timestamp), last_beacon = max(timestamp), total_queries = count() by client_ip

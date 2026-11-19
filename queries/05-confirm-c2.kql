@@ -1,0 +1,13 @@
+// Phase 4 - Confirm command-and-control (C2) activity
+
+// Network connections to the C2 IP (TCP/443, blends in with normal HTTPS)
+NetworkFlow
+| where dest_ip == "185.174.137.42"
+| project timestamp, src_ip, dest_ip, dest_port, protocol, bytes
+| take 10
+
+// Beacon paths at the proxy: /api/v1/status and /api/v1/config
+ProxyEvents
+| where domain == "update-cdn-service.xyz"
+| project timestamp, src_ip, url, method, status_code
+| order by timestamp asc

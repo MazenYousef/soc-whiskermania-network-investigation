@@ -1,0 +1,28 @@
+// Phase 1 - Understand the environment before hunting
+// Data: DeviceInfo (asset inventory with VLAN and IP)
+
+// How many VLANs exist, and how many devices are in each?
+DeviceInfo
+| summarize device_count = count() by vlan
+| order by device_count desc
+
+// Internet-facing assets in the DMZ (donation portal, proxy, web servers)
+DeviceInfo
+| where vlan == "dmz"
+| project name, ip_address, host_type
+
+// Core servers (mail, DNS)
+DeviceInfo
+| where vlan == "servers"
+| project name, ip_address
+
+// Crown jewels: the restricted zone (domain controller)
+DeviceInfo
+| where vlan == "restricted"
+| project name, ip_address, host_type
+
+// Map an IP prefix to its zone
+DeviceInfo
+| where ip_address startswith "10.10.1."
+| project name, ip_address, vlan
+| take 5
